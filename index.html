@@ -1,398 +1,223 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sintonia Picante</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a0813 0%, #3a001a 100%);
-            color: #fff;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        h1 { color: #ff3366; text-align: center; text-shadow: 0 0 10px rgba(255,51,102,0.5); font-size: 24px; }
-        h3 { margin: 5px 0; color: #ff8fa3; }
-        p { color: #cccccc; text-align: center; font-size: 14px; }
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 51, 102, 0.2);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .btn {
-            background: linear-gradient(90deg, #ff3366, #ff0044);
-            color: white; border: none; padding: 12px 30px;
-            font-size: 16px; font-weight: bold; border-radius: 25px;
-            cursor: pointer; margin: 10px 0; width: 100%;
-            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
-            transition: 0.2s;
-        }
-        .btn:disabled { background: #444; box-shadow: none; cursor: not-allowed; }
-        .input-sala {
-            width: 100%; padding: 12px 20px; margin: 15px 0;
-            border-radius: 25px; border: 1px solid rgba(255, 51, 102, 0.5);
-            background: rgba(0, 0, 0, 0.3); color: #fff;
-            font-size: 16px; text-align: center; box-sizing: border-box;
-            outline: none;
-        }
-        .input-sala:focus { border-color: #ff3366; box-shadow: 0 0 10px rgba(255,51,102,0.3); }
-        
-        /* Representação Estilizada de Corpo */
-        .corpo-container {
-            width: 130px; height: 260px; margin: 15px auto;
-            border: 2px dashed rgba(255,255,255,0.2);
-            border-radius: 60px; position: relative;
-            background: rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .corpo-label {
-            position: absolute; width: 100%; text-align: center;
-            font-size: 12px; font-weight: bold; text-transform: uppercase;
-            letter-spacing: 1px; color: #ff8fa3; bottom: -25px;
-        }
-        .silhueta { font-size: 80px; opacity: 0.7; animation: pulsar-corpo 2s infinite alternate; }
-        @keyframes pulsar-corpo {
-            from { transform: scale(0.95); opacity: 0.6; }
-            to { transform: scale(1.05); opacity: 0.9; }
-        }
-        
-        /* Lista de Ações */
-        .lista-acoes { text-align: left; margin: 20px 0; }
-        .acao-item {
-            background: rgba(255,255,255,0.08);
-            padding: 12px; margin-bottom: 8px; border-radius: 10px;
-            cursor: pointer; display: flex; align-items: center;
-            border: 1px solid transparent; transition: 0.2s;
-        }
-        .acao-item:hover { background: rgba(255,51,102,0.1); }
-        .acao-item.selecionada { background: rgba(255,51,102,0.2); border-color: #ff3366; }
-        .acao-item input { margin-right: 12px; transform: scale(1.2); }
-        
-        /* Bloqueio de Tela */
-        .bloqueio {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 3, 8, 0.93); z-index: 100;
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; padding: 20px; text-align: center;
-            box-sizing: border-box;
-        }
-        .status-msg { font-weight: bold; font-size: 18px; margin: 15px 0; padding: 10px; border-radius: 10px; }
-        .erro { background: rgba(255, 0, 0, 0.2); color: #ff4d4d; border: 1px solid rgba(255,0,0,0.4); }
-        .sucesso { background: rgba(0, 255, 0, 0.2); color: #4dff4d; border: 1px solid rgba(0,255,0,0.4); }
-        .info-sala { font-size: 11px; color: #ff8fa3; margin-top: -10px; margin-bottom: 15px; opacity: 0.7; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sintonia Picante - Posição do Dia</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #1a0813 0%, #3a001a 100%);
+color: #fff;
+min-height: 100vh;
+margin: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 20px;
+box-sizing: border-box;
+}
+h1 { color: #ff3366; text-align: center; text-shadow: 0 0 10px rgba(255,51,102,0.5); font-size: 24px; margin-bottom: 5px; }
+h3 { margin: 10px 0 5px 0; color: #ff8fa3; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+p { color: #cccccc; text-align: center; font-size: 14px; margin-top: 5px; }
+.card {
+background: rgba(255, 255, 255, 0.05);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 51, 102, 0.2);
+border-radius: 20px;
+padding: 25px;
+width: 100%;
+max-width: 400px;
+box-sizing: border-box;
+text-align: center;
+box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+.btn {
+background: linear-gradient(90deg, #ff3366, #ff0044);
+color: white; border: none; padding: 14px 30px;
+font-size: 16px; font-weight: bold; border-radius: 25px;
+cursor: pointer; margin: 20px 0 10px 0; width: 100%;
+box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+transition: 0.2s;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+.btn:hover {
+transform: scale(1.02);
+box-shadow: 0 6px 20px rgba(255, 51, 102, 0.6);
+}
+.btn:disabled { background: #444; box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* Ilustração/Container da Posição */
+.posicao-container {
+width: 140px; height: 140px; margin: 20px auto;
+border: 2px dashed rgba(255, 51, 102, 0.4);
+border-radius: 50%; position: relative;
+background: rgba(0,0,0,0.3);
+display: flex; flex-direction: column; justify-content: center; align-items: center;
+box-shadow: inset 0 0 20px rgba(255, 51, 102, 0.2);
+}
+.icone-posicao { font-size: 65px; animation: pulsar 2.5s infinite alternate; }
+
+@keyframes pulsar {
+from { transform: scale(0.95); filter: drop-shadow(0 0 5px rgba(255,51,102,0.4)); }
+to { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(255,51,102,0.8)); }
+}
+
+/* Informações do Catálogo */
+.foguinhos { font-size: 22px; margin: 10px 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.titulo-posicao { font-size: 22px; font-weight: bold; color: #fff; margin: 5px 0; }
+.instrucoes-box {
+background: rgba(255, 255, 255, 0.07);
+border-radius: 12px;
+padding: 15px;
+text-align: left;
+margin-top: 15px;
+border-left: 4px solid #ff3366;
+font-size: 13.5px;
+line-height: 1.5;
+color: #e0e0e0;
+}
+.contador-catalogo {
+font-size: 11px; color: #ff8fa3; margin-top: 15px; opacity: 0.6; font-weight: bold;
+}
+.tag-tempo {
+background: rgba(255, 51, 102, 0.2);
+color: #ff8fa3;
+padding: 5px 12px;
+border-radius: 15px;
+font-size: 11px;
+display: inline-block;
+font-weight: bold;
+margin-bottom: 10px;
+border: 1px solid rgba(255, 51, 102, 0.4);
+}
+</style>
 </head>
 <body>
 
-<div class="card" id="setup-room">
+<div class="card">
     <h1>Sintonia Picante 🔥</h1>
-    <p>Crie uma senha ou digite a mesma senha que o seu parceiro(a) escolheu:</p>
-    <input type="text" id="input-chave-sala" class="input-sala" placeholder="Ex: amor123 ou 4589" maxlength="20">
-    <p style="font-size:12px; margin-bottom:20px;">Escolha quem você é nesta sala:</p>
-    <button class="btn" onclick="conectarSala(1)">Homem (Jogador 1)</button>
-    <button class="btn" onclick="conectarSala(2)" style="background: linear-gradient(90deg, #e056fd, #be2edd);">Mulher (Jogador 2)</button>
-</div>
-
-<div class="card" id="jogo-container" style="display: none;">
-    <div class="info-sala" id="exibir-id-sala">SALA: -</div>
-    <h1 id="titulo-nivel">Nível 1: Provocação</h1>
+    <p>Sua dose diária de intimidade e novidade</p>
     
-    <div class="corpo-container">
-        <div class="silhueta" id="icone-corpo">👤</div>
-        <div class="corpo-label" id="label-corpo">Corpo Dela</div>
+    <hr style="border: 0; border-top: 1px solid rgba(255,51,102,0.2); margin: 15px 0;">
+    
+    <div class="tag-tempo" id="data-atual">DESAFIO DAS PRÓXIMAS 24H</div>
+    
+    <div class="posicao-container">
+        <div class="icone-posicao" id="posicao-emoji">🧘‍♀️</div>
     </div>
     
-    <div style="margin-top: 35px;">
-        <h3 id="instrucao-turno">Sua vez de escolher:</h3>
-        <div class="lista-acoes" id="container-opcoes"></div>
-        <div id="feedback-resultado"></div>
-        <button class="btn" id="btn-enviar" onclick="enviarEscolha()">Confirmar Ação</button>
-        <button class="btn" id="btn-proximo" onclick="avancarNivel()" style="display: none; background: #22c55e;">Avançar de Nível 🚀</button>
+    <div class="foguinhos" id="posicao-dificuldade">🔥🔥🔥</div>
+    
+    <div class="titulo-posicao" id="posicao-nome">Carrossel</div>
+    <h3>Kama Sutra</h3>
+    
+    <div class="instrucoes-box" id="posicao-instrucoes">
+        Carregando instruções secretas...
     </div>
-</div>
-
-<div class="bloqueio" id="tela-bloqueio" style="display: none;">
-    <h2 style="color: #ff3366;" id="titulo-bloqueio">Aguarde... ⏳</h2>
-    <p id="msg-bloqueio">O outro jogador está realizando a escolha dele no celular.</p>
+    
+    <button class="btn" id="btn-aceitar" onclick="aceitarDesafio()">Aceitar Desafio 😈</button>
+    
+    <div class="contador-catalogo" id="posicao-index">POSIÇÃO 1 DE 120</div>
 </div>
 
 <script>
-const firebaseConfig = {  
-    apiKey: "AIzaSyCUgW-csz8wG5G93P2gFh6UxcNuY_271RQ",
-    authDomain: "desejos-sincronizados.firebaseapp.com",
-    databaseURL: "https://desejos-sincronizados-default-rtdb.firebaseio.com",
-    projectId: "desejos-sincronizados",
-    storageBucket: "desejos-sincronizados.firebasestorage.app",
-    messagingSenderId: "755081628819",
-    appId: "1:755081628819:web:68a119e5cd5cd2c3785166"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-let jogoRef = null; 
-
-const niveis = {
-    1: {
-        nome: "Nível 1: Provocação 💋",
-        opcoes: [
-            "Dar um beijo de 10 segundos no pescoço",
-            "Fazer uma massagem rápida nos ombros",
-            "Sussurrar uma fantasia safada no ouvido",
-            "Dar uma mordida leve na orelha"
-        ]
+// Catálogo expansível até 120 posições (Exemplos estruturados prontos para expansão)
+const catalogoPosicoes = [
+    {
+        nome: "A Ponte do Desejo",
+        emoji: "🧎‍♂️",
+        dificuldade: "🔥🔥",
+        instrucoes: "O parceiro ativo fica de joelhos enquanto o parceiro receptor deita de costas, elevando o quadril com o apoio de almofadas firmes. Esta posição do Kama Sutra maximiza o contato visual e permite carícias suaves por todo o corpo durante o movimento."
     },
-    2: {
-        nome: "Nível 2: Desejo 🔥",
-        opcoes: [
-            "Tirar uma peça de roupa usando apenas os dentes",
-            "Dar um beijo quente descendo até a barriga",
-            "Ficar de conchinha bem colado por 1 minuto",
-            "Passar os lábios lentamente pelo corpo todo"
-        ]
+    {
+        nome: "O Lótus Suspenso",
+        emoji: "🧘‍♂️",
+        dificuldade: "🔥🔥🔥🔥",
+        instrucoes: "Um dos parceiros senta-se de pernas cruzadas (posição de lótus) e o outro senta-se no colo dele, envolvendo a cintura com as pernas. Exige força e equilíbrio, promovendo uma conexão íntima, olho no olho, extremamente intensa e profunda."
     },
-    3: {
-        nome: "Nível 3: Delírio Total 😈",
-        opcoes: [
-            "Tirar a calcinha/cueca com a boca",
-            "Beijar intensamente na posição favorita",
-            "Fazer um carinho super ousado por baixo das roupas",
-            "Consumar o desejo do momento sem regras"
-        ]
+    {
+        nome: "A Flecha de Cupido",
+        emoji: "🤸‍♀️",
+        dificuldade: "🔥🔥🔥",
+        instrucoes: "O parceiro receptor deita de costas de lado na cama, esticando uma das pernas para cima enquanto a outra serve de apoio. O parceiro ativo se aproxima de joelhos. Uma excelente opção para focar em estímulos lentos, profundos e prazerosos."
+    },
+    {
+        nome: "O Tigre Agachado",
+        emoji: "🐅",
+        dificuldade: "🔥",
+        instrucoes: "Uma variação confortável e altamente estimulante do clássico de quatro. O parceiro receptor apoia o peito e os braços completamente colados nos lençóis (com o quadril levemente elevado), enquanto o parceiro ativo se posiciona logo atrás de joelhos."
+    },
+    {
+        nome: "União do Bambu",
+        emoji: "🎋",
+        dificuldade: "🔥🔥🔥🔥🔥",
+        instrucoes: "Ambos ficam em pé. O parceiro receptor eleva uma das pernas prendendo-a ao redor da cintura do parceiro ativo, que oferece o suporte e sustentação. Exige bastante sincronia física, sendo ideal para quebrar a rotina fora do quarto."
     }
-};
+    // Nota: Você pode continuar adicionando objetos aqui até completar as 120 opções do catálogo!
+];
 
-let meuJogador = null;
-let nivelAtual = 1;
-let acaoSelecionadaIndice = null;
-let bloqueioTemporarioErro = false;
-
-function conectarSala(num) {
-    const chaveSalaInput = document.getElementById("input-chave-sala").value.trim();
+// Função baseada em tempo para gerar o mesmo index estável durante as 24h do dia atual
+function obterPosicaoDoDia() {
+    const hoje = new Date();
+    // Cria um número único usando o Ano, Mês e Dia corrente
+    const sementeData = hoje.getFullYear() * 10000 + (hoje.getMonth() + 1) * 100 + hoje.getDate();
     
-    if (!chaveSalaInput) {
-        alert("Por favor, digite uma senha/código para a sala primeiro!");
-        return;
-    }
+    // O operador Resto (%) garante que o índice rotacione perfeitamente dentro do tamanho real do catálogo
+    const indice = sementeData % catalogoPosicoes.length;
     
-    const nomeSalaLimpo = chaveSalaInput.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    meuJogador = num;
+    return {
+        posicao: catalogoPosicoes[indice],
+        numeroReal: indice + 1
+    };
+}
+
+function renderizarPosicao() {
+    const dadosDoDia = obterPosicaoDoDia();
+    const pos = dadosDoDia.posicao;
     
-    jogoRef = db.ref("salas_sintonia/" + nomeSalaLimpo);
+    // Atualiza os elementos da tela
+    document.getElementById("posicao-nome").innerText = pos.nome;
+    document.getElementById("posicao-emoji").innerText = pos.emoji;
+    document.getElementById("posicao-dificuldade").innerText = pos.dificuldade;
+    document.getElementById("posicao-instrucoes").innerText = pos.instrucoes;
+    document.getElementById("posicao-index").innerText = `POSIÇÃO ${dadosDoDia.numeroReal} DE ${catalogoPosicoes.length} DO CATÁLOGO`;
     
-    document.getElementById("exibir-id-sala").innerText = "SALA PRIVADA: " + chaveSalaInput.toUpperCase();
-    document.getElementById("setup-room").style.display = "none";
-    document.getElementById("jogo-container").style.display = "block";
+    // Formata exibição da data local de validade do desafio
+    const hoje = new Date();
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    document.getElementById("data-atual").innerText = `DESAFIO DE HOJE • ${hoje.toLocaleDateString('pt-BR', options)}`;
+}
 
-    if(meuJogador === 1) {
-        document.getElementById("icone-corpo").innerText = "💃";
-        document.getElementById("label-corpo").innerText = "Corpo Dela";
-    } else {
-        document.getElementById("icone-corpo").innerText = "🕺";
-        document.getElementById("label-corpo").innerText = "Corpo Dele";
-    }
-
-    if(meuJogador === 1) {
-        jogoRef.once("value").then((snapshot) => {
-            if(!snapshot.exists()) {
-                jogoRef.set({
-                    nivel: 1,
-                    propositor: 1,
-                    escolhaJ1: -1,
-                    escolhaJ2: -1,
-                    status: "jogando"
-                });
-            }
-        });
-    }
+function aceitarDesafio() {
+    // Desativa o botão temporariamente celebrando a escolha do casal
+    const btn = document.getElementById("btn-aceitar");
+    btn.disabled = true;
+    btn.innerText = "Desafio Aceito! 😏";
     
-    ouvirBancoDeDados();
-}
-
-function ouvirBancoDeDados() {
-    jogoRef.on("value", (snapshot) => {
-        const dados = snapshot.val();
-        if (!dados) return;
-
-        if (bloqueioTemporarioErro) return;
-
-        nivelAtual = dados.nivel;
-        document.getElementById("titulo-nivel").innerText = niveis[nivelAtual].nome;
-
-        // Se o status voltou para jogando e as escolhas limparam, limpa a seleção local
-        if (dados.status === "jogando" && dados.escolhaJ1 === -1 && dados.escolhaJ2 === -1) {
-            acaoSelecionadaIndice = null;
-            document.getElementById("btn-enviar").style.display = "block";
-            document.getElementById("btn-proximo").style.display = "none";
-            document.getElementById("feedback-resultado").innerHTML = "";
-        }
-
-        if (dados.status === "sucesso") {
-            mostrarSucesso(dados.escolhaJ1);
-            return;
-        }
-
-        if (dados.status === "erro") {
-            tratarErroConcorrente(dados.propositor);
-            return;
-        }
-
-        renderizarListaAcoes();
-
-        const euSouOPropositor = (meuJogador === dados.propositor);
-        if (euSouOPropositor) {
-            if ((meuJogador === 1 && dados.escolhaJ1 === -1) || (meuJogador === 2 && dados.escolhaJ2 === -1)) {
-                liberarMinhaTela(meuJogador === 1 ? "O que você quer FAZER no corpo dela?" : "O que você quer FAZER no corpo dele?");
-            } else {
-                bloquearMinhaTela("Aguardando ele/ela adivinhar o que você escolheu...", "Sintonizando... ⚡");
-            }
-        } else {
-            if ((dados.propositor === 1 && dados.escolhaJ1 !== -1 && dados.escolhaJ2 === -1) || 
-                (dados.propositor === 2 && dados.escolhaJ2 !== -1 && dados.escolhaJ1 === -1)) {
-                liberarMinhaTela(dados.propositor === 1 ? "O que você acha que ele quer FAZER em você?" : "O que você acha que ela quer que você FAÇA nela?");
-            } else {
-                bloquearMinhaTela("Aguardando o outro jogador selecionar a ação do turno...", "Aguarde o parceiro(a) ⏳");
-            }
-        }
-    });
-}
-
-function renderizarListaAcoes() {
-    const container = document.getElementById("container-opcoes");
-    container.innerHTML = "";
-    const opcoes = niveis[nivelAtual].opcoes;
-
-    opcoes.forEach((opcao, indice) => {
-        const div = document.createElement("div");
-        div.className = "acao-item" + (acaoSelecionadaIndice === indice ? " selecionada" : "");
-        div.onclick = () => selecionarOpcao(indice, div);
-        div.innerHTML = `<input type="radio" name="opcoes" id="opt-${indice}" ${acaoSelecionadaIndice === indice ? 'checked' : ''}> <label style="cursor:pointer;">${opcao}</label>`;
-        container.appendChild(div);
-    });
-}
-
-function selecionarOpcao(indice, elemento) {
-    acaoSelecionadaIndice = indice;
-    document.querySelectorAll(".acao-item").forEach(el => el.classList.remove("selecionada"));
-    elemento.classList.add("selecionada");
-    const radio = elemento.querySelector("input");
-    if(radio) radio.checked = true;
-}
-
-function liberarMinhaTela(instrucao) {
-    document.getElementById("tela-bloqueio").style.display = "none";
-    document.getElementById("instrucao-turno").innerText = instrucao;
-    document.getElementById("btn-enviar").disabled = false;
-}
-
-function bloquearMinhaTela(mensagem, titulo = "Aguarde... ⏳") {
-    document.getElementById("tela-bloqueio").style.display = "flex";
-    document.getElementById("titulo-bloqueio").innerText = titulo;
-    document.getElementById("msg-bloqueio").innerText = message = mensagem;
-}
-
-function enviarEscolha() {
-    if (acaoSelecionadaIndice === null) {
-        alert("Por favor, selecione uma ação antes!");
-        return;
-    }
-    document.getElementById("btn-enviar").disabled = true;
-
-    const campoUpdate = meuJogador === 1 ? { escolhaJ1: acaoSelecionadaIndice } : { escolhaJ2: acaoSelecionadaIndice };
-
-    jogoRef.update(campoUpdate).then(() => {
-        jogoRef.once("value").then((snapshot) => {
-            const dados = snapshot.val();
-            if (dados.escolhaJ1 !== -1 && dados.escolhaJ2 !== -1) {
-                if (dados.escolhaJ1 === dados.escolhaJ2) {
-                    jogoRef.update({ status: "sucesso" });
-                } else {
-                    jogoRef.update({ status: "erro" });
-                }
-            }
-        });
-    });
-}
-
-function tratarErroConcorrente(propositorAtual) {
-    bloqueioTemporarioErro = true;
-    document.getElementById("tela-bloqueio").style.display = "none";
-    document.getElementById("feedback-resultado").innerHTML = `<div class="status-msg erro"> Não foi dessa vez... 💔<br><span style="font-size:12px;">Desejos desalinhados. Alternando a liderança!</span></div>`;
-    document.getElementById("btn-enviar").disabled = true;
-
-    setTimeout(() => {
-        bloqueioTemporarioErro = false;
-        acaoSelecionadaIndice = null;
-        document.getElementById("feedback-resultado").innerHTML = "";
-        
-        // Apenas um jogador (Jogador 1) atualiza o banco global para evitar conflitos de concorrência
-        if (meuJogador === 1) {
-            const proximoPropositor = propositorAtual === 1 ? 2 : 1;
-            jogoRef.set({
-                nivel: nivelAtual,
-                propositor: proximoPropositor,
-                escolhaJ1: -1,
-                escolhaJ2: -1,
-                status: "jogando"
-            });
-        }
-    }, 3500);
-}
-
-function mostrarSucesso(indiceAcao) {
-    document.getElementById("tela-bloqueio").style.display = "none";
-    const feedback = document.getElementById("feedback-resultado");
-    const acaoRealizada = niveis[nivelAtual].opcoes[indiceAcao];
-    feedback.innerHTML = `<div class="status-msg sucesso"> SINTONIA CONFIRMADA! 🎉<br><br>Realizem a ação:<br><b>"${acaoRealizada}"</b></div>`;
-
-    if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 400]);
-    dispararConfetes();
-
-    document.getElementById("btn-enviar").style.display = "none";
-
-    if (nivelAtual < 3) {
-        document.getElementById("btn-proximo").style.display = "block";
-    } else {
-        feedback.innerHTML += "<div style='color:#ff3366; font-weight:bold; margin-top:20px; font-size: 16px;'>🔥 Vocês completaram o último nível! O resto é entre vocês... 😏</div>";
-    }
-}
-
-function avancarNivel() {
-    document.getElementById("btn-proximo").style.display = "none";
+    // Feedback tátil (se disponível em smartphones)
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     
-    jogoRef.update({
-        nivel: nivelAtual + 1,
-        propositor: 1,
-        escolhaJ1: -1,
-        escolhaJ2: -1,
-        status: "jogando"
-    });
+    // Efeito visual festivo e romântico
+    dispararConfetesSafados();
 }
 
-function dispararConfetes() {
-    const duration = 3 * 1000;
+function dispararConfetesSafados() {
+    const duration = 2.5 * 1000;
     const end = Date.now() + duration;
     (function frame() {
-        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y:0.8 }, colors: ['#ff3366', '#ffffff', '#be2edd'] });
-        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y:0.8 }, colors: ['#ff3366', '#ffffff', '#be2edd'] });
+        // Paleta de cores combinando com o Sintonia Picante (Rosas, Roxos e Branco)
+        confetti({ particleCount: 4, angle: 60, spread: 60, origin: { x: 0, y:0.8 }, colors: ['#ff3366', '#ffffff', '#be2edd'] });
+        confetti({ particleCount: 4, angle: 120, spread: 60, origin: { x: 1, y:0.8 }, colors: ['#ff3366', '#ffffff', '#be2edd'] });
         if (Date.now() < end) requestAnimationFrame(frame);
     }());
 }
+
+// Inicializa a renderização assim que a página carregar
+window.onload = renderizarPosicao;
 </script>
+
 </body>
 </html>
